@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="index_styles.css">
+    
+</head>
+<body>
+    <main>
+        <div id="container"></div>
+        <div id="sidebar"></div>
+    </main>
+    
+    <script type="text/babel">
+
+    /*import PropTypes from 'prop-types';*/
+
+
+            /*This is a JSX element. To render it to another component, you should include braces{}. JSX is Javascript XML
+            designed to write HTML elements. This JSX element is rendered as {JSX} in the next component Intro.*/
+            const JSX = (
+                    <div>
+                        <span>Good morning, friend!</span>
+                    </div>
+            )
+
+            const Intro = (props) => {
+                return(
+                    <div>
+                        <p>Welcome to my First React Page</p>
+                        <p>The total of 5 plus 5 is: <AddCompute /></p>
+                        <p>{JSX}</p>
+                        <p>The Current date is: {props.date}</p>
+                        <p>My best colors are {props.colors.join(", ")}</p>
+                        <p>I am INTRO, giving an {props.name}, as a {props.status} component</p>
+                    </div>
+                )
+
+            };
+
+            /*Intro.propTypes = { status: PropTypes.string.isRequired }*/
+
+            /*Default properties of Intro component should be declared on a global scope so it can be accessed globally 
+            together with other property values*/
+
+            Intro.defaultProps = {
+                    name: 'Introduction', status: 'Child'}
+            
+
+            /*This is a simple functional component that behaves like a function. Its return value is rendered. To render
+            it to another component, you should include tags< />. This is how most react components are rendered to the DOM as well as 
+            to other elements. it is rendered in the parent component MyReactSample*/
+
+            function AddCompute() {
+                return(
+                    <>
+                        <span>{5+5}</span>
+                        
+                    </>
+                )
+            }
+
+            const Child1 = () =>{
+                return(
+                    <div>
+                        <p>I am the first child of ReactSample</p>
+                        <ul>
+                            <li>Child1 is a list item</li>
+                            <li>Child1 is a grouped item</li>
+                            <li>Child1 is a leading item</li>
+                            <li>Child1 is a React item</li>
+                        </ul>
+                       
+                    </div>
+                )
+            }
+
+       
+            let selectedindex = 0;
+            /*This is an ES6 Class component or a React Component. Just like the functional component, it is rendered nested in tags< />
+            and can serve as a parent component*/
+            class MyReactSample extends React.Component{
+                constructor(props){
+                    super(props)
+                   this.state = {
+                    digit:'0', operand:'', digit_result: '', currenttime:'', updateStatus:'Stop Update', inputValue: '',
+                    randomIndex: ''
+                   }
+                   this.displayDigit = this.displayDigit.bind(this)
+                   this.clearDisplay = this.clearDisplay.bind(this)
+                   this.displayOperand = this.displayOperand.bind(this)
+                   this.decimalize = this.decimalize.bind(this)
+                   this.updateOrnot = this.updateOrnot.bind(this)
+                   this.deletedigit = this.deletedigit.bind(this)
+                   this.equation = this.equation.bind(this)
+                   this.ask = this.ask.bind(this)
+
+                   
+                }
+
+                ask(event){
+                    this.setState(state=>({randomIndex: event.target.value}))
+                }
+
+                componentWillMount(){
+                    console.log("My Component has mounted!");
+
+                }
+
+                shouldComponentUpdate(nextProps, nextState){
+                    if(this.state.updateStatus === 'Stop Update'){ //(this.state.updateStatus!==nextState.updateStatus)
+                        return true
+                    }
+                    //return false
+                }
+
+                deletedigit(){
+                    this.setState(state=>(this.state.digit.length>1? {digit: (state.digit.substring(0, state.digit.length -1))} : {digit: '0'} )
+                     
+                    )
+                }
+
+                updateOrnot(){
+                    this.setState(state=>(this.state.updateStatus==='Start Update'? {updateStatus: 'Stop Update'} : {updateStatus: 'Start Update'}))
+                }
+
+                componentDidMount() {
+                    setInterval(() => {
+                    this.setState({
+                    currenttime: new Date().toLocaleTimeString()
+                    });
+                    }, 1000);
+                    }
+                /*Computation based on the equal to computation*/
+                equation(){
+                    this.setState(state=>(
+                     this.state.operand==="+"?{digit: Number(state.digit_result) + Number(state.digit)}
+                    :this.state.operand==="-"?{digit: Number(state.digit_result) - Number(state.digit)}
+                    :this.state.operand==="*"?{digit: Number(state.digit_result) * Number(state.digit===''? 1:state.digit)}
+                    :this.state.operand==="/"?{digit: Number(state.digit_result) / Number(state.digit===''? 1:state.digit)}
+                    :{digit: Number(state.digit)}))
+                    this.setState(state=>({digit_result: '', operand:'', digit: state.digit}))
+                }
+
+                displayDigit(event){
+                    this.setState(state=>(this.state.digit==='0'?
+                    {digit: event.target.innerHTML}:{digit: state.digit + event.target.innerHTML}))
+                }
+
+                clearDisplay(){
+                    this.setState({digit: '0', digit_result:'', operand:''})
+                }
+
+                
+                /*Computation based on the operand clikced*/
+                displayOperand(event){
+                    this.setState(state=>({operand: event.target.innerHTML}))
+                    
+                    this.setState(state=>(this.state.operand==="-"?{digit_result: Number(state.digit_result) - Number(state.digit), digit:''}
+                    : this.state.operand==="+"?{digit_result: Number(state.digit_result) + Number(state.digit), digit:''}
+                    : this.state.operand==="*"?{digit_result: Number(state.digit_result) * Number(this.state.digit===''? 1:state.digit), digit:''}
+                    : this.state.operand==="/"?{digit_result: Number(state.digit_result) / Number(this.state.digit===''? 1:state.digit), digit:''}
+                    :{digit_result: Number(state.digit_result) + Number(state.digit), digit:''}))//{digit_result: (Number(state.digit_result) - Number(state.digit)), digit:''}))    
+                }
+
+                decimalize(event){
+                    this.setState(state=>(this.state.digit.includes(".")?
+                    {digit: state.digit}:{digit: state.digit + event.target.innerHTML}))
+
+                    this.setState(state=>(this.state.digit===""?
+                    {digit: "0" + state.digit}:{digit: state.digit}))
+                }
+                
+                render(){
+                    let btnstyle
+                    {
+                        (this.state.digit).length >=5? btnstyle = {border: '3px solid red', margin: '20'}: btnstyle = {border: '1px solid blue', transition: 'all 1s ease'}
+                    }
+
+                   
+                    let hstyle = {backgroundColor: 'red'}
+
+                    const riders =[
+                    {   name: 'Richard', zone: 'UNIBEN', ridecomponent: <h1>Richard E.</h1>, 
+                        comment:'It is certain, goes the popular saying of Mr. Richard Eduzola who joined the Speedaf Logistics Company since 2021. His warm and friendly disposition has had a postiive and deep impact to his fellow co-workers and officers alike.'},
+                    {   name: 'Lucky', zone: 'UNIBEN', ridecomponent: <h1>Lucky O.</h1>,
+                        comment:'Carry go, Mr. Lucky Okolie a senior colleague and rider of Speedaf Logisitics Express since 2020. He has been of a simple and thorough colleague whose charisma has attracted clients and colleagues together. His good communication skills has earned him a leading and charismatic role in UNIBEN Speedaf .'},
+                    {   name: 'Vincent', zone: 'UNIBEN', ridecomponent: <h1>Vincent O.</h1>,
+                        comment:'I go fly, Mr. Vincent has had his feet hanging on several scenarios but with a soft skillful landing. He has been a supportive and positive chap whose offline stunts has earned him a rider to be admired indeed.'},
+                    {   name: 'Friday', zone: 'UNIBEN', ridecomponent: <h1>Friday N.</h1>,
+                        comment:'Here I come, Mr. Friday has had his little rough starts but his determined and positive mindset has finally earned him a place among UNIBEN Speedaf Riders. Welcome to the delivery club. It is a pleasure to have you.'}
+                    ]
+
+                    const possibleAnswers = [
+                    'It is certain',
+                    'It is decidedly so',
+                    'Without a doubt',
+                    'Yes, definitely',
+                    'You may rely on it',
+                    'As I see it, yes',
+                    'Outlook good',
+                    'Yes',
+                    'Signs point to yes',
+                    'Reply hazy try again',
+                    'Ask again later',
+                    'Better not tell you now',
+                    'Cannot predict now',
+                    'Concentrate and ask again',
+                    "Don't count on it",
+                    'My reply is no',
+                    'My sources say no',
+                    'Most likely',
+                    'Outlook not so good',
+                    'Very doubtful'
+                    ];
+                    
+
+                    // function handleIndex(){
+                    //     return selectedindex += 1///===undefined? selectedindex='0' : selectedindex = '1'
+                        
+                    // }
+                    // const [countIndex, Counting]  = useState(0)
+                    // const indexbtn = 
+                    //                 <>
+                    //                     <span>{countIndex}</span>
+                    //                     <button onClick={()=>{Counting(countIndex)}}>Result</button>
+                                    
+                    //                 </>
+                    const answer = possibleAnswers[this.state.randomIndex]; // Change this line
+                    const items = possibleAnswers.map((i,key)=>key%2===0 && <ul key={i}><li>{i}</li></ul>);
+                    const myguy = riders.filter((myride, key)=> myride.comment==="Carry go" || key%1===0)
+                    const couriers = myguy.map((rider,key)=><ul ><li className={selectedindex===key?'activeselect':'inactiveselect'} onClick={()=>{selectedindex=key}}>{rider.name}</li></ul>);
+                    const courier_comments = myguy.map((ride,key)=>key===selectedindex && <ul key={selectedindex}><li>{ride.comment}</li></ul>);
+                    const courier_name = myguy.map((ride,key)=>key===selectedindex && <ul key={selectedindex}><li>{ride.ridecomponent}</li></ul>);
+                    /*For me to access directly the properties and functions of the parent component MyReactSample in a root or parent-container termed 'container'
+                     for the child component Welcome in a different container or child-container termed 'sidebar', I have to declare or render it here with
+                     ReactDOM.render inside the parent component for direct inheritance purposes*/
+                    ReactDOM.render(<Welcome myname = 'Orunta Enyinnaya Kelechi' myridername={courier_name} myriderindex = {selectedindex} rcomments ={courier_comments} delivery={couriers} arraylist={items} mydisplay={btnstyle} myanswer={answer} equate ={this.equation} myrequest={this.ask} myinput={this.state.inputValue} myindex={this.state.randomIndex}
+                    backspace={this.deletedigit} updateComp={this.updateOrnot} mystatus={this.state.updateStatus} current_time ={this.state.currenttime} insertdecimal={this.decimalize} currentoperand = {this.state.operand} finalval = {this.state.digit_result} digit_val ={this.state.digit_result + this.state.operand + this.state.digit } displayResult={this.displayDigit} clearResult={this.clearDisplay} viewOperand={this.displayOperand} />, document.getElementById('sidebar'));
+
+                    return(
+                        <div>
+                            <h1>My First React Page</h1>
+                            <Child1 />
+                            <Intro  date ={Date()} 
+                            colors = {["red", "green", "blue"]} name={"Favorite Colors"} />
+                            <p>Possible answer is: {answer}</p>
+                            
+                        </div>
+                        /*<Intro />*/
+                    )
+                }
+            }
+
+            const cssstyle = {width: 'auto', border: '3px solid red', margin: 5}
+
+            class Welcome extends React.Component{
+                constructor(props){
+                    super(props)
+                    /* A state is declared like this */
+                    this.state = {
+                        id: 'Sample1', desc: 'This is my first React page.', 
+                        creator: 'React', programmer: '', btnname:'Created By',
+                        myelement: '', submit:"", result: ''
+                    }
+
+                    /*Always remember to use the binding funtion to bind functions to the constructor*/
+                    this.handleClick = this.handleClick.bind(this);
+                    this.programmerClick = this.programmerClick.bind(this)
+                    this.elementClicked = this.elementClicked.bind(this)
+                    this.submitClicked =  this.submitClicked.bind(this)
+                    this.displaytext = this.displaytext.bind(this)
+
+                    }
+
+                    /*functions can be declared with parameters or not. This custom parameter 'event' I included is to capture the 
+                    html element i am assigning the function*/
+                    handleClick(event){
+                       this.setState( 
+                        this.state.creator === 'React'? {creator: 'Javascript XML or JSX' , btnname:"Back"} :
+                     {creator: 'React', btnname:"Created By"})
+                        this.setState({myelement: event.target.innerHTML})
+                        
+                    }
+
+                    programmerClick(event){
+                        this.setState(
+                            {programmer: 'Orunta Kelechi, an upcoming React programmer',
+                        myelement: event.target.innerHTML }
+                            
+                        )
+                       
+                    }
+
+                    elementClicked(event){
+                        this.setState(
+                            {myelement: event.target.innerHTML}
+                        )
+                    }
+
+                    submitClicked(event){
+                        this.setState(
+                            {submit: event.target.value}
+                        )
+                    }
+
+                    displaytext(){
+                        this.setState({
+                            result: this.state.submit
+                        })
+                    }
+                    
+                render(){
+ 
+                    const wel_description = this.state.desc
+                    const my_creator = this.state.creator
+                
+
+                    return(
+                        <div>
+                            <h1>Welcome</h1>
+                            <p>Welcome <strong>{this.props.myname}</strong>!</p>
+                            <p>Description:<em>{this.state.desc}</em>. It is proudly designed with the special 
+                            front-end library with Javascript framework called <em>{my_creator}</em></p>
+                            <button onClick={this.handleClick}>{this.state.btnname}</button>
+                            <button onClick={this.programmerClick}>Programmer</button>
+                            <h3>Programmer:<span>{this.state.programmer}</span></h3>
+                            <p>I just clicked:<span>{this.state.myelement}</span></p>
+
+                            
+                                <fieldset>
+                                    <legend>A Brief Description</legend>
+                                    <textarea  cols="50" rows="10" onChange={this.submitClicked}></textarea>
+                                </fieldset>
+                                <button onClick={this.displaytext}>Enter Comment</button>
+                                <p>Description: {this.state.result}</p>
+                                <p>My name is: {this.props.myname}</p>
+
+                                <input type="text" value={this.props.digit_val==='+' || this.props.digit_val==='-' || this.props.digit_val==='*' || this.props.digit_val==='/'? (this.props.finalval + this.props.currentoperand) : (this.props.digit_val)} />
+                                <span className='timer'>Current Time is: {this.props.current_time} + {this.props.currentoperand}</span>
+                                <div style={this.props.mydisplay} className='calc_grid'>
+                                    <button onClick={this.props.clearResult}>CE</button>
+                                    <button onClick={this.props.displayResult}>1</button>
+                                    <button onClick={this.props.displayResult}>2</button>
+                                    <button onClick={this.props.displayResult}>3</button>
+                                    <button onClick={this.props.displayResult}>4</button>
+                                    <button onClick={this.props.displayResult}>5</button>
+                                    <button onClick={this.props.displayResult}>6</button>
+                                    <button onClick={this.props.displayResult}>7</button>
+                                    <button onClick={this.props.displayResult}>8</button>
+                                    <button onClick={this.props.displayResult}>9</button>
+                                    <button onClick={this.props.displayResult}>0</button>
+                                    <button onClick={this.props.viewOperand}>+</button>
+                                    <button onClick={this.props.viewOperand}>-</button>
+                                    <button onClick={this.props.viewOperand}>*</button>
+                                    <button onClick={this.props.viewOperand}>/</button>
+                                    <button onClick={this.props.insertdecimal}>.</button>
+                                    <button onClick={this.props.backspace}>DEL</button>
+                                    <button onClick={this.props.equate}>=</button>
+                                </div>
+                            
+                                <h1>{this.props.myriderindex + 1}</h1>
+                                <button  onClick={this.props.updateComp}>{this.props.mystatus}</button> 
+                                
+                                {this.props.digit_val==='0'? <span>Display values in  the calculator to access the field below:</span>: this.props.digit_val &&<fieldset style={cssstyle}>
+                                    <input type="text"  onChange={this.props.myrequest}/>
+                                    <p>The possible answer is <strong>{this.props.myanswer}</strong></p>
+                                </fieldset>}
+
+                                <table>
+                                    <thead>
+                                        <th>ANSWERS</th>
+                                        <th>RIDERS</th>
+                                        <th>DESCRIPTION</th>
+                                    </thead>
+                                        <td>{this.props.arraylist}</td>
+                                        <td>{this.props.delivery}</td>
+                                        <td><div>{this.props.myridername}<p><blockquote><em>{this.props.rcomments}</em></blockquote></p></div></td>
+                                </table>
+
+                                
+                                
+                        </div>
+                    )
+                }
+            }
+            ReactDOM.render(<MyReactSample />, document.getElementById('container'));
+            ReactDOM.renderToString(<MyReactSample />)
+            // ReactDOM.render(<Welcome myname={this.props.comp}  />, document.getElementById('sidebar'));
+    </script>
+</body>
+</html>
